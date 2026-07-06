@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pet Care Resources — PawPath</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand"><span class="brand-mark">🐾</span> PawPath</a>
+      <nav class="main-nav" id="mainNav">
+        <a href="pets.html">Browse Pets</a>
+        <a href="lost-found.html">Lost &amp; Found</a>
+        <a href="resources.html">Resources</a>
+        <a href="surrender-pet.html">Give Up a Pet</a>
+      </nav>
+      <div class="nav-actions" id="navActions">
+        <a href="login.html" class="btn btn-ghost">Log In</a>
+        <a href="register.html" class="btn btn-primary">Sign Up</a>
+      </div>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-head">
+      <div class="container">
+        <h1>Pet care resources</h1>
+        <p>Articles and tips for new and experienced pet owners alike.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+
+        <div class="tab-group" id="resourceTabs">
+          <button class="tab-btn active" data-category="">All</button>
+          <button class="tab-btn" data-category="Nutrition">Nutrition</button>
+          <button class="tab-btn" data-category="Training">Training</button>
+          <button class="tab-btn" data-category="Health">Health</button>
+          <button class="tab-btn" data-category="Grooming">Grooming</button>
+        </div>
+
+        <div class="resource-grid" id="resourceGrid">
+          <p class="empty-state">Loading articles…</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Single article reader, shown when an article is opened -->
+    <section class="section" id="articleSection" hidden>
+      <div class="container container-narrow">
+        <a href="#" class="link-back" id="backToResources">← Back to resources</a>
+        <article class="article-card">
+          <span class="origin-tag" id="articleCategory"></span>
+          <h1 id="articleTitle"></h1>
+          <p class="article-meta" id="articleMeta"></p>
+          <img id="articleImage" class="article-image" src="" alt="" hidden />
+          <div id="articleContent"></div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <a href="index.html" class="brand">🐾 PawPath</a>
+        <p>A Pet Care &amp; Adoption Platform — built as a Cloud Computing project on Firebase.</p>
+      </div>
+    </div>
+    <p class="footer-note">© 2026 PawPath. College project — Firebase Firestore, Auth &amp; Storage.</p>
+  </footer>
+
+  <script type="module" src="js/firebase-config.js"></script>
+  <script type="module" src="js/auth.js"></script>
+  <script type="module" src="js/resources.js"></script>
+</body>
+</html>

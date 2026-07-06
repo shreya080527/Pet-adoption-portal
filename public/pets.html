@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Browse Pets — PawPath</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand"><span class="brand-mark">🐾</span> PawPath</a>
+      <nav class="main-nav" id="mainNav">
+        <a href="pets.html">Browse Pets</a>
+        <a href="lost-found.html">Lost &amp; Found</a>
+        <a href="resources.html">Resources</a>
+        <a href="surrender-pet.html">Give Up a Pet</a>
+      </nav>
+      <div class="nav-actions" id="navActions">
+        <a href="login.html" class="btn btn-ghost">Log In</a>
+        <a href="register.html" class="btn btn-primary">Sign Up</a>
+      </div>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-head">
+      <div class="container">
+        <h1>Browse pets</h1>
+        <p>Filter by species, age, or origin story to find the right match.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container browse-layout">
+
+        <!-- FILTER SIDEBAR -->
+        <aside class="filters">
+          <h3>Filters</h3>
+
+          <div class="filter-group">
+            <label for="filterSpecies">Species</label>
+            <select id="filterSpecies">
+              <option value="">All species</option>
+              <option value="Dog">Dog</option>
+              <option value="Cat">Cat</option>
+              <option value="Rabbit">Rabbit</option>
+              <option value="Bird">Bird</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="filterOrigin">Origin</label>
+            <select id="filterOrigin">
+              <option value="">Any origin</option>
+              <option value="shelter_born">Born in shelter</option>
+              <option value="rescued">Rescued</option>
+              <option value="owner_given_up">Given up by owner</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="filterAge">Age</label>
+            <select id="filterAge">
+              <option value="">Any age</option>
+              <option value="young">Young (0–1 yr)</option>
+              <option value="adult">Adult (1–7 yrs)</option>
+              <option value="senior">Senior (7+ yrs)</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="filterStatus">Status</label>
+            <select id="filterStatus">
+              <option value="available">Available</option>
+              <option value="pending">Pending</option>
+              <option value="adopted">Adopted</option>
+              <option value="">All</option>
+            </select>
+          </div>
+
+          <button class="btn btn-outline btn-block" id="resetFilters">Reset filters</button>
+        </aside>
+
+        <!-- RESULTS -->
+        <div class="browse-results">
+          <div class="results-bar">
+            <input type="search" id="searchInput" placeholder="Search by name or breed…" />
+            <span id="resultsCount" class="results-count"></span>
+          </div>
+          <div class="pet-grid" id="petGrid">
+            <p class="empty-state">Loading pets…</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <a href="index.html" class="brand">🐾 PawPath</a>
+        <p>A Pet Care &amp; Adoption Platform — built as a Cloud Computing project on Firebase.</p>
+      </div>
+    </div>
+    <p class="footer-note">© 2026 PawPath. College project — Firebase Firestore, Auth &amp; Storage.</p>
+  </footer>
+
+  <script type="module" src="js/firebase-config.js"></script>
+  <script type="module" src="js/auth.js"></script>
+  <script type="module" src="js/pets.js"></script>
+</body>
+</html>

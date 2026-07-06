@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lost &amp; Found — PawPath</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand"><span class="brand-mark">🐾</span> PawPath</a>
+      <nav class="main-nav" id="mainNav">
+        <a href="pets.html">Browse Pets</a>
+        <a href="lost-found.html">Lost &amp; Found</a>
+        <a href="resources.html">Resources</a>
+        <a href="surrender-pet.html">Give Up a Pet</a>
+      </nav>
+      <div class="nav-actions" id="navActions">
+        <a href="login.html" class="btn btn-ghost">Log In</a>
+        <a href="register.html" class="btn btn-primary">Sign Up</a>
+      </div>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-head">
+      <div class="container page-head-row">
+        <div>
+          <h1>Lost &amp; Found</h1>
+          <p>Report a lost pet, or a stray you've found, to help reunite pets with their owners.</p>
+        </div>
+        <button class="btn btn-primary" id="openReportFormBtn">+ Report a Pet</button>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+
+        <p class="form-error" id="authGate" hidden>
+          Please <a href="login.html">log in</a> to report a lost or found pet.
+        </p>
+
+        <form id="lostFoundForm" class="form form-card" hidden novalidate>
+          <h3>Report a lost or found pet</h3>
+
+          <label for="postType">This is a...</label>
+          <select id="postType" required>
+            <option value="lost">Lost pet (mine is missing)</option>
+            <option value="found">Found pet (I found a stray)</option>
+          </select>
+
+          <div class="form-row">
+            <div>
+              <label for="lfSpecies">Species</label>
+              <select id="lfSpecies" required>
+                <option value="">Select species</option>
+                <option value="Dog">Dog</option>
+                <option value="Cat">Cat</option>
+                <option value="Rabbit">Rabbit</option>
+                <option value="Bird">Bird</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label for="lfBreed">Breed (if known)</label>
+              <input type="text" id="lfBreed" placeholder="e.g. Indian Pariah" />
+            </div>
+          </div>
+
+          <label for="lfColor">Color / markings</label>
+          <input type="text" id="lfColor" placeholder="e.g. White with brown patches" />
+
+          <label for="lfDescription">Description</label>
+          <textarea id="lfDescription" rows="3" required placeholder="Distinguishing features, collar, behavior, etc."></textarea>
+
+          <div class="form-row">
+            <div>
+              <label for="lfLocation">Location</label>
+              <input type="text" id="lfLocation" required placeholder="e.g. Near Gandhi Park, Madurai" />
+            </div>
+            <div>
+              <label for="lfDate">Date</label>
+              <input type="date" id="lfDate" required />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div>
+              <label for="lfContactName">Contact name</label>
+              <input type="text" id="lfContactName" required />
+            </div>
+            <div>
+              <label for="lfContactPhone">Contact phone</label>
+              <input type="tel" id="lfContactPhone" required />
+            </div>
+          </div>
+
+          <label for="lfImageFile">Photo (optional)</label>
+          <input type="file" id="lfImageFile" accept="image/*" />
+          <img id="lfImagePreview" class="image-preview" hidden alt="Preview" />
+
+          <p class="form-error" id="lfError" hidden></p>
+          <p class="form-success" id="lfSuccess" hidden></p>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="lfSubmitBtn">Post Report</button>
+            <button type="button" class="btn btn-ghost" id="cancelLfForm">Cancel</button>
+          </div>
+        </form>
+
+        <div class="results-bar">
+          <div class="tab-group" id="lfTabs">
+            <button class="tab-btn active" data-type="">All</button>
+            <button class="tab-btn" data-type="lost">Lost</button>
+            <button class="tab-btn" data-type="found">Found</button>
+          </div>
+        </div>
+
+        <div class="lf-grid" id="lfGrid">
+          <p class="empty-state">Loading reports…</p>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <a href="index.html" class="brand">🐾 PawPath</a>
+        <p>A Pet Care &amp; Adoption Platform — built as a Cloud Computing project on Firebase.</p>
+      </div>
+    </div>
+    <p class="footer-note">© 2026 PawPath. College project — Firebase Firestore, Auth &amp; Storage.</p>
+  </footer>
+
+  <script type="module" src="js/firebase-config.js"></script>
+  <script type="module" src="js/auth.js"></script>
+  <script type="module" src="js/lost-found.js"></script>
+</body>
+</html>

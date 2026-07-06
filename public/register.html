@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up — PawPath</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand"><span class="brand-mark">🐾</span> PawPath</a>
+      <nav class="main-nav" id="mainNav">
+        <a href="pets.html">Browse Pets</a>
+        <a href="lost-found.html">Lost &amp; Found</a>
+        <a href="resources.html">Resources</a>
+        <a href="surrender-pet.html">Give Up a Pet</a>
+      </nav>
+      <div class="nav-actions" id="navActions">
+        <a href="login.html" class="btn btn-ghost">Log In</a>
+        <a href="register.html" class="btn btn-primary">Sign Up</a>
+      </div>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
+    </div>
+  </header>
+
+  <main class="auth-page">
+    <div class="container auth-wrap">
+      <div class="auth-card">
+        <h1>Create your account</h1>
+        <p class="auth-sub">Sign up to adopt, surrender a pet, or report a lost/found animal.</p>
+
+        <form id="registerForm" class="form" novalidate>
+          <label for="name">Full name</label>
+          <input type="text" id="name" name="name" required autocomplete="name" placeholder="Jane Doe" />
+
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required autocomplete="email" placeholder="you@example.com" />
+
+          <label for="phone">Phone number</label>
+          <input type="tel" id="phone" name="phone" required autocomplete="tel" placeholder="+91 98765 43210" />
+
+          <label for="address">Address</label>
+          <input type="text" id="address" name="address" required autocomplete="street-address" placeholder="City, State" />
+
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required minlength="6" autocomplete="new-password" placeholder="At least 6 characters" />
+
+          <label for="confirmPassword">Confirm password</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" required minlength="6" autocomplete="new-password" placeholder="Re-enter password" />
+
+          <p class="form-error" id="registerError" hidden></p>
+
+          <button type="submit" class="btn btn-primary btn-block" id="registerBtn">Sign Up</button>
+        </form>
+
+        <p class="auth-switch">Already have an account? <a href="login.html">Log in</a></p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <a href="index.html" class="brand">🐾 PawPath</a>
+        <p>A Pet Care &amp; Adoption Platform — built as a Cloud Computing project on Firebase.</p>
+      </div>
+    </div>
+    <p class="footer-note">© 2026 PawPath. College project — Firebase Firestore, Auth &amp; Storage.</p>
+  </footer>
+
+  <script type="module" src="js/firebase-config.js"></script>
+  <script type="module" src="js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Surrender a Pet — PawPath</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand"><span class="brand-mark">🐾</span> PawPath</a>
+      <nav class="main-nav" id="mainNav">
+        <a href="pets.html">Browse Pets</a>
+        <a href="lost-found.html">Lost &amp; Found</a>
+        <a href="resources.html">Resources</a>
+        <a href="surrender-pet.html">Give Up a Pet</a>
+      </nav>
+      <div class="nav-actions" id="navActions">
+        <a href="login.html" class="btn btn-ghost">Log In</a>
+        <a href="register.html" class="btn btn-primary">Sign Up</a>
+      </div>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-head">
+      <div class="container">
+        <h1>Give up a pet</h1>
+        <p>If you can no longer care for your pet, tell us about them. Our team will review the
+           submission before the pet is listed for adoption.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container container-narrow">
+
+        <p class="form-error" id="authGate" hidden>
+          Please <a href="login.html">log in</a> first so we can contact you about this pet.
+        </p>
+
+        <form id="surrenderForm" class="form form-card" novalidate>
+
+          <label for="petName">Pet name</label>
+          <input type="text" id="petName" required placeholder="e.g. Misty" />
+
+          <div class="form-row">
+            <div>
+              <label for="petSpecies">Species</label>
+              <select id="petSpecies" required>
+                <option value="">Select species</option>
+                <option value="Dog">Dog</option>
+                <option value="Cat">Cat</option>
+                <option value="Rabbit">Rabbit</option>
+                <option value="Bird">Bird</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label for="petBreed">Breed</label>
+              <input type="text" id="petBreed" placeholder="e.g. Persian" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div>
+              <label for="petAge">Age (years)</label>
+              <input type="number" id="petAge" min="0" step="0.5" required />
+            </div>
+            <div>
+              <label for="petGender">Gender</label>
+              <select id="petGender" required>
+                <option value="">Select</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </div>
+          </div>
+
+          <label for="petColor">Color</label>
+          <input type="text" id="petColor" placeholder="e.g. Grey tabby" />
+
+          <div class="form-row">
+            <div class="checkbox-row">
+              <input type="checkbox" id="petVaccinated" />
+              <label for="petVaccinated">Vaccinated</label>
+            </div>
+            <div class="checkbox-row">
+              <input type="checkbox" id="petNeutered" />
+              <label for="petNeutered">Neutered / Spayed</label>
+            </div>
+          </div>
+
+          <label for="reasonGivenUp">Reason for giving up the pet</label>
+          <textarea id="reasonGivenUp" rows="3" required placeholder="e.g. Relocating abroad, allergies in the family, etc."></textarea>
+
+          <label for="petDescription">Tell us about your pet</label>
+          <textarea id="petDescription" rows="4" required placeholder="Temperament, habits, favorite things, good with kids/other pets, etc."></textarea>
+
+          <label for="petImageFile">Pet photo</label>
+          <input type="file" id="petImageFile" accept="image/*" required />
+          <img id="imagePreview" class="image-preview" hidden alt="Preview" />
+
+          <p class="form-note">
+            Your submission goes into a review queue (status: <strong>pending</strong>). Shelter staff
+            will verify the details and contact you before the pet is listed publicly.
+          </p>
+
+          <p class="form-error" id="surrenderError" hidden></p>
+          <p class="form-success" id="surrenderSuccess" hidden></p>
+
+          <button type="submit" class="btn btn-primary btn-block" id="surrenderBtn">Submit for Review</button>
+        </form>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <a href="index.html" class="brand">🐾 PawPath</a>
+        <p>A Pet Care &amp; Adoption Platform — built as a Cloud Computing project on Firebase.</p>
+      </div>
+    </div>
+    <p class="footer-note">© 2026 PawPath. College project — Firebase Firestore, Auth &amp; Storage.</p>
+  </footer>
+
+  <script type="module" src="js/firebase-config.js"></script>
+  <script type="module" src="js/auth.js"></script>
+  <script type="module" src="js/surrender-pet.js"></script>
+</body>
+</html>

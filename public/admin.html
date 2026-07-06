@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — PawPath</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand"><span class="brand-mark">🐾</span> PawPath</a>
+      <nav class="main-nav" id="mainNav">
+        <a href="pets.html">Browse Pets</a>
+        <a href="lost-found.html">Lost &amp; Found</a>
+        <a href="resources.html">Resources</a>
+        <a href="surrender-pet.html">Give Up a Pet</a>
+      </nav>
+      <div class="nav-actions" id="navActions">
+        <a href="login.html" class="btn btn-ghost">Log In</a>
+        <a href="register.html" class="btn btn-primary">Sign Up</a>
+      </div>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-head">
+      <div class="container">
+        <h1>Admin dashboard</h1>
+        <p>Manage pets, adoption requests, surrenders, lost &amp; found posts, and resources.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+
+        <p class="form-error" id="authGate" hidden>
+          You must be logged in as an admin to view this page.
+        </p>
+
+        <div id="adminContent" hidden>
+
+          <div class="dash-grid">
+            <div class="dash-stat"><strong id="adminTotalPets">0</strong><span>Total pets</span></div>
+            <div class="dash-stat"><strong id="adminPendingAdoptions">0</strong><span>Pending adoptions</span></div>
+            <div class="dash-stat"><strong id="adminPendingSurrenders">0</strong><span>Pending surrenders</span></div>
+            <div class="dash-stat"><strong id="adminUsers">0</strong><span>Registered users</span></div>
+          </div>
+
+          <div class="tab-group" id="adminTabs">
+            <button class="tab-btn active" data-panel="pets">Pets</button>
+            <button class="tab-btn" data-panel="adoptions">Adoption Requests</button>
+            <button class="tab-btn" data-panel="surrenders">Surrender Submissions</button>
+            <button class="tab-btn" data-panel="lostfound">Lost &amp; Found</button>
+            <button class="tab-btn" data-panel="resources">Resources</button>
+            <button class="tab-btn" data-panel="users">Users</button>
+          </div>
+
+          <!-- PETS PANEL -->
+          <div class="admin-panel" id="panel-pets">
+            <div class="panel-toolbar">
+              <input type="search" id="adminPetSearch" placeholder="Search pets…" />
+              <a href="add-pet.html" class="btn btn-primary">+ Add Pet</a>
+            </div>
+            <div class="dash-table-wrap">
+              <table class="dash-table">
+                <thead>
+                  <tr><th>Photo</th><th>Name</th><th>Species</th><th>Origin</th><th>Status</th><th></th></tr>
+                </thead>
+                <tbody id="adminPetsBody">
+                  <tr><td colspan="6" class="empty-state">Loading…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ADOPTION REQUESTS PANEL -->
+          <div class="admin-panel" id="panel-adoptions" hidden>
+            <div class="dash-table-wrap">
+              <table class="dash-table">
+                <thead>
+                  <tr><th>Pet</th><th>Adopter</th><th>Home type</th><th>Experience</th><th>Status</th><th></th></tr>
+                </thead>
+                <tbody id="adminAdoptionsBody">
+                  <tr><td colspan="6" class="empty-state">Loading…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- SURRENDER SUBMISSIONS PANEL -->
+          <div class="admin-panel" id="panel-surrenders" hidden>
+            <div class="dash-table-wrap">
+              <table class="dash-table">
+                <thead>
+                  <tr><th>Photo</th><th>Pet</th><th>Owner</th><th>Reason</th><th>Status</th><th></th></tr>
+                </thead>
+                <tbody id="adminSurrendersBody">
+                  <tr><td colspan="6" class="empty-state">Loading…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- LOST & FOUND PANEL -->
+          <div class="admin-panel" id="panel-lostfound" hidden>
+            <div class="dash-table-wrap">
+              <table class="dash-table">
+                <thead>
+                  <tr><th>Photo</th><th>Type</th><th>Species</th><th>Location</th><th>Posted by</th><th></th></tr>
+                </thead>
+                <tbody id="adminLfBody">
+                  <tr><td colspan="6" class="empty-state">Loading…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- RESOURCES PANEL -->
+          <div class="admin-panel" id="panel-resources" hidden>
+            <div class="panel-toolbar">
+              <button class="btn btn-primary" id="toggleAddResourceForm">+ Add Article</button>
+            </div>
+
+            <form id="addResourceForm" class="form form-card" hidden>
+              <label for="resTitle">Title</label>
+              <input type="text" id="resTitle" required />
+
+              <label for="resCategory">Category</label>
+              <select id="resCategory" required>
+                <option value="Nutrition">Nutrition</option>
+                <option value="Training">Training</option>
+                <option value="Health">Health</option>
+                <option value="Grooming">Grooming</option>
+              </select>
+
+              <label for="resContent">Content</label>
+              <textarea id="resContent" rows="6" required></textarea>
+
+              <label for="resImageFile">Cover image (optional)</label>
+              <input type="file" id="resImageFile" accept="image/*" />
+
+              <p class="form-error" id="resError" hidden></p>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Publish Article</button>
+                <button type="button" class="btn btn-ghost" id="cancelAddResource">Cancel</button>
+              </div>
+            </form>
+
+            <div class="dash-table-wrap">
+              <table class="dash-table">
+                <thead>
+                  <tr><th>Title</th><th>Category</th><th>Author</th><th>Published</th><th></th></tr>
+                </thead>
+                <tbody id="adminResourcesBody">
+                  <tr><td colspan="5" class="empty-state">Loading…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- USERS PANEL -->
+          <div class="admin-panel" id="panel-users" hidden>
+            <p class="form-note">
+              To promote a user to admin: open Firestore console → <code>users</code> collection →
+              select the user document → set <code>role</code> field to <code>"admin"</code>.
+            </p>
+            <div class="dash-table-wrap">
+              <table class="dash-table">
+                <thead>
+                  <tr><th>Name</th><th>Email</th><th>Role</th><th>Joined</th></tr>
+                </thead>
+                <tbody id="adminUsersBody">
+                  <tr><td colspan="4" class="empty-state">Loading…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <a href="index.html" class="brand">🐾 PawPath</a>
+        <p>A Pet Care &amp; Adoption Platform — built as a Cloud Computing project on Firebase.</p>
+      </div>
+    </div>
+    <p class="footer-note">© 2026 PawPath. College project — Firebase Firestore, Auth &amp; Storage.</p>
+  </footer>
+
+  <script type="module" src="js/firebase-config.js"></script>
+  <script type="module" src="js/auth.js"></script>
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>

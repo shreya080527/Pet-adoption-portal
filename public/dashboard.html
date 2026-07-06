@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Dashboard — PawPath</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand"><span class="brand-mark">🐾</span> PawPath</a>
+      <nav class="main-nav" id="mainNav">
+        <a href="pets.html">Browse Pets</a>
+        <a href="lost-found.html">Lost &amp; Found</a>
+        <a href="resources.html">Resources</a>
+        <a href="surrender-pet.html">Give Up a Pet</a>
+      </nav>
+      <div class="nav-actions" id="navActions">
+        <a href="login.html" class="btn btn-ghost">Log In</a>
+        <a href="register.html" class="btn btn-primary">Sign Up</a>
+      </div>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-head">
+      <div class="container">
+        <h1>My dashboard</h1>
+        <p id="welcomeMsg">Welcome back.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+
+        <p class="form-error" id="authGate" hidden>
+          Please <a href="login.html">log in</a> to view your dashboard.
+        </p>
+
+        <div id="dashboardContent" hidden>
+
+          <div class="dash-grid">
+            <div class="dash-stat">
+              <strong id="dashAdoptionCount">0</strong>
+              <span>Adoption requests</span>
+            </div>
+            <div class="dash-stat">
+              <strong id="dashSurrenderCount">0</strong>
+              <span>Pets surrendered</span>
+            </div>
+            <div class="dash-stat">
+              <strong id="dashLfCount">0</strong>
+              <span>Lost &amp; Found posts</span>
+            </div>
+          </div>
+
+          <div class="dash-section">
+            <h2>My adoption requests</h2>
+            <div class="dash-table-wrap">
+              <table class="dash-table" id="adoptionTable">
+                <thead>
+                  <tr><th>Pet</th><th>Status</th><th>Submitted</th><th></th></tr>
+                </thead>
+                <tbody id="adoptionTableBody">
+                  <tr><td colspan="4" class="empty-state">Loading…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="dash-section">
+            <h2>Pets I've surrendered</h2>
+            <div class="dash-table-wrap">
+              <table class="dash-table" id="surrenderTable">
+                <thead>
+                  <tr><th>Pet</th><th>Status</th><th>Submitted</th><th></th></tr>
+                </thead>
+                <tbody id="surrenderTableBody">
+                  <tr><td colspan="4" class="empty-state">Loading…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="dash-section">
+            <h2>My Lost &amp; Found posts</h2>
+            <div class="dash-table-wrap">
+              <table class="dash-table" id="lfTable">
+                <thead>
+                  <tr><th>Pet</th><th>Type</th><th>Posted</th><th></th></tr>
+                </thead>
+                <tbody id="lfTableBody">
+                  <tr><td colspan="4" class="empty-state">Loading…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="dash-section">
+            <h2>My profile</h2>
+            <form id="profileForm" class="form form-card">
+              <label for="profileName">Full name</label>
+              <input type="text" id="profileName" required />
+
+              <label for="profilePhone">Phone</label>
+              <input type="tel" id="profilePhone" required />
+
+              <label for="profileAddress">Address</label>
+              <input type="text" id="profileAddress" required />
+
+              <p class="form-error" id="profileError" hidden></p>
+              <p class="form-success" id="profileSuccess" hidden></p>
+
+              <button type="submit" class="btn btn-primary">Save Changes</button>
+            </form>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <a href="index.html" class="brand">🐾 PawPath</a>
+        <p>A Pet Care &amp; Adoption Platform — built as a Cloud Computing project on Firebase.</p>
+      </div>
+    </div>
+    <p class="footer-note">© 2026 PawPath. College project — Firebase Firestore, Auth &amp; Storage.</p>
+  </footer>
+
+  <script type="module" src="js/firebase-config.js"></script>
+  <script type="module" src="js/auth.js"></script>
+  <script type="module" src="js/dashboard.js"></script>
+</body>
+</html>

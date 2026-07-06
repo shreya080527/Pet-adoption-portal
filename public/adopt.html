@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adoption Request — PawPath</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand"><span class="brand-mark">🐾</span> PawPath</a>
+      <nav class="main-nav" id="mainNav">
+        <a href="pets.html">Browse Pets</a>
+        <a href="lost-found.html">Lost &amp; Found</a>
+        <a href="resources.html">Resources</a>
+        <a href="surrender-pet.html">Give Up a Pet</a>
+      </nav>
+      <div class="nav-actions" id="navActions">
+        <a href="login.html" class="btn btn-ghost">Log In</a>
+        <a href="register.html" class="btn btn-primary">Sign Up</a>
+      </div>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-head">
+      <div class="container">
+        <h1>Adoption request</h1>
+        <p>You're requesting to adopt <strong id="adoptPetName">this pet</strong>. A quick
+           compatibility questionnaire helps our team match pets to the right homes.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container container-narrow">
+
+        <div class="pet-summary-card" id="petSummaryCard" hidden>
+          <img id="adoptPetImage" src="" alt="" />
+          <div>
+            <h3 id="adoptPetNameCard"></h3>
+            <p id="adoptPetMetaCard"></p>
+          </div>
+        </div>
+
+        <p class="form-error" id="authGate" hidden>
+          Please <a href="login.html">log in</a> to submit an adoption request.
+        </p>
+
+        <form id="adoptionForm" class="form form-card" novalidate>
+
+          <h3>Compatibility questionnaire</h3>
+
+          <label for="homeType">Home type</label>
+          <select id="homeType" required>
+            <option value="">Select home type</option>
+            <option value="Apartment">Apartment</option>
+            <option value="Independent house">Independent house</option>
+            <option value="House with yard">House with yard</option>
+            <option value="Farm / Rural">Farm / Rural</option>
+          </select>
+
+          <label for="experience">Experience with pets</label>
+          <select id="experience" required>
+            <option value="">Select experience level</option>
+            <option value="First-time owner">First-time owner</option>
+            <option value="Some experience">Some experience</option>
+            <option value="Very experienced">Very experienced</option>
+          </select>
+
+          <label for="preferredAnimal">Preferred animal type (if browsing generally)</label>
+          <input type="text" id="preferredAnimal" placeholder="e.g. Calm, small dog" />
+
+          <label for="householdMembers">Household members</label>
+          <input type="text" id="householdMembers" placeholder="e.g. 2 adults, 1 child, no other pets" />
+
+          <label for="message">Why do you want to adopt this pet?</label>
+          <textarea id="message" rows="4" required placeholder="Tell the shelter a bit about why this pet would be a good fit."></textarea>
+
+          <p class="form-error" id="adoptionError" hidden></p>
+          <p class="form-success" id="adoptionSuccess" hidden></p>
+
+          <button type="submit" class="btn btn-primary btn-block" id="adoptionBtn">Submit Adoption Request</button>
+        </form>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <a href="index.html" class="brand">🐾 PawPath</a>
+        <p>A Pet Care &amp; Adoption Platform — built as a Cloud Computing project on Firebase.</p>
+      </div>
+    </div>
+    <p class="footer-note">© 2026 PawPath. College project — Firebase Firestore, Auth &amp; Storage.</p>
+  </footer>
+
+  <script type="module" src="js/firebase-config.js"></script>
+  <script type="module" src="js/auth.js"></script>
+  <script type="module" src="js/adoption.js"></script>
+</body>
+</html>
