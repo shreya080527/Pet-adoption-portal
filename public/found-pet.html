@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Report a Found Stray | PawPath</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ===== SHARED NAVBAR ===== -->
+<header class="site-header">
+  <div class="nav-inner container">
+    <a href="index.html" class="brand"><span class="brand-mark">🐾</span> PawPath</a>
+    <nav class="main-nav" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="pets.html">Browse Pets</a>
+      <a href="found-pet.html" class="active">Report Stray</a>
+      <a href="lost-found.html">Lost &amp; Found</a>
+      <a href="resources.html">Resources</a>
+    </nav>
+    <div class="nav-actions" id="navActions">
+      <a href="login.html" class="btn btn-sm auth-only-logged-out">Log In</a>
+      <a href="register.html" class="btn btn-sm btn-primary auth-only-logged-out">Sign Up</a>
+      <a href="dashboard.html" class="btn btn-sm auth-only-logged-in" style="display:none;">Dashboard</a>
+      <a href="admin.html" class="btn btn-sm admin-only" style="display:none;">Admin</a>
+      <a href="#" id="logoutBtn" class="btn btn-sm btn-outline auth-only-logged-in" style="display:none;">Logout</a>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
+  </div>
+</header>
+
+<!-- ===== PAGE HEAD ===== -->
+<section class="page-head container">
+  <span class="origin-tag">No login required</span>
+  <h1>Found a Pet on the Street?</h1>
+  <p>If you've found an animal with no owner in sight, register them here so shelters and adopters can see them right away. This is different from <a href="surrender-pet.html" style="text-decoration:underline;">giving up a pet you already own</a> — this form is only for strays with no known former owner.</p>
+</section>
+
+<!-- ===== FORM ===== -->
+<section class="section">
+  <div class="container">
+    <form id="foundPetForm" class="form form-card">
+
+      <h3>About the animal</h3>
+
+      <label for="petName">Give them a name (optional)</label>
+      <input type="text" id="petName" placeholder="e.g. Bruno, or leave blank">
+
+      <div class="form-row">
+        <div>
+          <label for="species">Species *</label>
+          <select id="species" required>
+            <option value="">Select...</option>
+            <option value="dog">Dog</option>
+            <option value="cat">Cat</option>
+            <option value="rabbit">Rabbit</option>
+            <option value="bird">Bird</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label for="breed">Breed (if known)</label>
+          <input type="text" id="breed" placeholder="Unknown / mixed is fine">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div>
+          <label for="ageGroup">Approximate age</label>
+          <select id="ageGroup">
+            <option value="unknown">Not sure</option>
+            <option value="baby">Baby</option>
+            <option value="young">Young</option>
+            <option value="adult">Adult</option>
+            <option value="senior">Senior</option>
+          </select>
+        </div>
+        <div>
+          <label for="gender">Gender</label>
+          <select id="gender">
+            <option value="unknown">Not sure</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div>
+          <label for="size">Size</label>
+          <select id="size">
+            <option value="unknown">Not sure</option>
+            <option value="small">Small</option>
+            <option value="medium">Medium</option>
+            <option value="large">Large</option>
+          </select>
+        </div>
+        <div>
+          <label for="color">Color / markings</label>
+          <input type="text" id="color" placeholder="e.g. brown with white patch">
+        </div>
+      </div>
+
+      <label for="description">Condition &amp; temperament</label>
+      <textarea id="description" rows="4" placeholder="Health condition, injuries, how they behaved, anything useful for whoever takes them in"></textarea>
+
+      <h3 style="margin-top:24px;">Where you found them</h3>
+
+      <label for="foundLocation">Location found *</label>
+      <input type="text" id="foundLocation" required placeholder="Street, area, or landmark">
+
+      <label for="foundDate">Date found</label>
+      <input type="date" id="foundDate">
+
+      <h3 style="margin-top:24px;">Photo</h3>
+      <label for="photoInput">Upload a photo *</label>
+      <input type="file" id="photoInput" accept="image/*" required>
+      <img id="imagePreview" class="image-preview" style="display:none;">
+
+      <h3 style="margin-top:24px;">Your contact info (optional)</h3>
+      <p style="margin-top:-6px;">Only shared with shelter staff in case they need more details — not shown publicly.</p>
+
+      <div class="form-row">
+        <div>
+          <label for="reporterName">Your name</label>
+          <input type="text" id="reporterName" placeholder="Optional">
+        </div>
+        <div>
+          <label for="reporterContact">Phone or email</label>
+          <input type="text" id="reporterContact" placeholder="Optional">
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">Register This Pet</button>
+      </div>
+
+      <div id="formMessage"></div>
+    </form>
+  </div>
+</section>
+
+<!-- ===== SHARED FOOTER ===== -->
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div>
+      <a href="index.html" class="brand">🐾 PawPath</a>
+      <p>Built with care for pets who need one.</p>
+    </div>
+  </div>
+  <p class="footer-note">&copy; 2026 PawPath</p>
+</footer>
+
+<script type="module" src="js/firebase-config.js"></script>
+<script type="module" src="js/utils.js"></script>
+<script type="module" src="js/auth.js"></script>
+<script type="module" src="js/found-pet.js"></script>
+</body>
+</html>

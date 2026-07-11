@@ -820,3 +820,205 @@ code {
 @media (max-width: 700px) {
   .footer-inner { grid-template-columns: 1fr; }
 }
+/* ============================================
+   GALLERY ADDITIONS — append to end of style.css
+   Pet gallery cards + horizontal filter bar
+   Uses existing palette vars already defined in style.css:
+   --cream, --ink, --terracotta, --forest, --tan, --status-red
+   ============================================ */
+ 
+.page-header {
+  max-width: 900px;
+  margin: 40px auto 0;
+  padding: 0 24px;
+  text-align: center;
+}
+ 
+.page-header h1 {
+  font-family: 'Fraunces', serif;
+  font-size: 2.2rem;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+ 
+.page-header p {
+  color: var(--ink);
+  opacity: 0.75;
+}
+ 
+/* ---------- Horizontal filter bar ---------- */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px;
+  max-width: 1200px;
+  margin: 32px auto 0;
+  padding: 20px;
+  background: var(--tan);
+  border: 2px solid var(--ink);
+  border-radius: 18px;
+}
+ 
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 140px;
+  flex: 1 1 140px;
+}
+ 
+.filter-field label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink);
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+ 
+.filter-field input,
+.filter-field select {
+  padding: 10px 12px;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  background: var(--cream);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+ 
+.filter-field input:focus,
+.filter-field select:focus {
+  outline: none;
+  border-color: var(--terracotta);
+}
+ 
+.btn-small {
+  padding: 10px 18px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  height: fit-content;
+}
+ 
+/* ---------- Result count ---------- */
+.gallery-meta {
+  max-width: 1200px;
+  margin: 20px auto 0;
+  padding: 0 24px;
+  font-size: 0.9rem;
+  color: var(--ink);
+  opacity: 0.7;
+}
+ 
+/* ---------- Gallery grid ---------- */
+.pet-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 24px;
+  max-width: 1200px;
+  margin: 16px auto 60px;
+  padding: 0 24px;
+}
+ 
+.pet-card {
+  background: var(--cream);
+  border: 2px solid var(--ink);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 4px 4px 0 var(--ink);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.15s ease;
+}
+ 
+.pet-card:hover {
+  transform: translateY(-4px);
+}
+ 
+.pet-card-photo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-bottom: 2px solid var(--ink);
+}
+ 
+.pet-card-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+ 
+.pet-card-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: var(--terracotta);
+  color: var(--cream);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 2px solid var(--ink);
+}
+ 
+.pet-card-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+ 
+.pet-card-name {
+  font-family: 'Fraunces', serif;
+  font-size: 1.2rem;
+  color: var(--ink);
+  margin: 0;
+}
+ 
+.pet-card-breed {
+  font-size: 0.9rem;
+  color: var(--ink);
+  opacity: 0.85;
+  margin: 0;
+}
+ 
+.pet-card-origin {
+  font-size: 0.8rem;
+  color: var(--forest);
+  font-weight: 600;
+  margin: 0 0 10px;
+}
+ 
+.pet-card-btn {
+  margin-top: auto;
+  text-align: center;
+  width: 100%;
+}
+ 
+/* ---------- Empty state ---------- */
+.gallery-empty {
+  max-width: 600px;
+  margin: 40px auto;
+  text-align: center;
+  padding: 32px;
+  background: var(--tan);
+  border: 2px dashed var(--ink);
+  border-radius: 18px;
+  color: var(--ink);
+  opacity: 0.8;
+}
+ 
+/* ---------- Responsive ---------- */
+@media (max-width: 860px) {
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .filter-field {
+    min-width: 100%;
+  }
+}

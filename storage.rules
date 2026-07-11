@@ -4,31 +4,40 @@ service firebase.storage {
 
     // Pet images — logged-in users upload; public read
     match /pets/{fileName} {
-      allow read:  if true;
+      allow read: if true;
       allow write: if request.auth != null
-                   && request.resource.size < 5 * 1024 * 1024   // max 5 MB
+                   && request.resource.size < 5 * 1024 * 1024
                    && request.resource.contentType.matches('image/.*');
     }
 
-    // Surrender images — same rules as pets
+    // Public found-stray uploads (no login required)
+    // Only applies to files stored in:
+    // pet-photos/found-strays/<filename>
+    match /pet-photos/found-strays/{fileName} {
+      allow read: if true;
+      allow write: if request.resource.size < 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+    }
+
+    // Surrender images — logged-in users only
     match /surrenders/{fileName} {
-      allow read:  if true;
+      allow read: if true;
       allow write: if request.auth != null
                    && request.resource.size < 5 * 1024 * 1024
                    && request.resource.contentType.matches('image/.*');
     }
 
-    // Lost & Found images
+    // Lost & Found images — logged-in users only
     match /lost_found/{fileName} {
-      allow read:  if true;
+      allow read: if true;
       allow write: if request.auth != null
                    && request.resource.size < 5 * 1024 * 1024
                    && request.resource.contentType.matches('image/.*');
     }
 
-    // Resource / article cover images — admin only write
+    // Resource/article images — logged-in users only
     match /resources/{fileName} {
-      allow read:  if true;
+      allow read: if true;
       allow write: if request.auth != null
                    && request.resource.size < 5 * 1024 * 1024
                    && request.resource.contentType.matches('image/.*');

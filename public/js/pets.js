@@ -1,154 +1,165 @@
-// ============================================================
-// pets.js
-// Used by: pets.html, pet-detail.html, index.html (featured)
-// ============================================================
+// pets.js — Browse/filter gallery for pets.html
+// Loads ALL pets once, renders them as gallery cards, then filters
+// client-side live as the user types/selects (no extra Firestore reads per keystroke).
 
-import { db }      from "./firebase-config.js";
-import { auth }    from "./auth.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { db } from './firebase-config.js';
 import {
-  collection, getDocs, getDoc, doc,
-  query, where, orderBy, limit
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { formatDate, originLabel, getParam } from "./utils.js";
+  collection,
+  getDocs,
+  query,
+  where
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// ── Shared pet card builder ───────────────────────────────────
-export function buildPetCard(pet) {
-  const statusClass = { available: "badge-available", pending: "badge-pending", adopted: "badge-adopted" }[pet.status] || "";
-  return `
-    <div class="pet-card">
-      <img class="pet-card-img"
-           src="${pet.imageURL || 'https://placehold.co/400x300?text=No+Photo'}"
-           alt="${pet.name}" />
-      <div class="pet-card-body">
-        <h3>${pet.name}</h3>
-        <p class="pet-card-meta">${pet.species}${pet.breed ? " · " + pet.breed : ""} · ${pet.age ?? "?"} yr${pet.age !== 1 ? "s" : ""} · ${pet.gender || ""}</p>
-        <p class="pet-card-meta" style="margin-bottom:0">${originLabel(pet.origin)}</p>
-        <div class="pet-card-footer">
-          <a href="pet-detail.html?id=${pet.id}" class="btn btn-sm btn-primary">View profile</a>
-          <span class="badge ${statusClass}">${pet.status}</span>
-        </div>
-      </div>
-    </div>`;
+let allPets = [];
+
+const galleryEl = document.getElementById('petGallery');
+const emptyEl = document.getElementById('galleryEmpty');
+const resultCountEl = document.getElementById('resultCount');
+
+const filters = {
+  search: document.getElementById('filterSearch'),
+  species: document.getElementById('filterSpecies'),
+  age: document.getElementById('filterAge'),
+  gender: document.getElementById('filterGender'),
+  origin: document.getElementById('filterOrigin'),
+  size: document.getElementById('filterSize'),
+};
+
+const clearBtn = document.getElementById('clearFiltersBtn');
+
+// ---------- Load pets from Firestore ----------
+async function loadPets() {
+  try {
+    // Only show pets that are available for adoption in the public gallery.
+    // Adjust/remove the where() clause if you want surrendered-but-pending pets hidden differently.
+    const petsRef = collection(db, 'pets');
+    const q = query(petsRef, where('status', '!=', 'adopted'));
+    const snap = await getDocs(q);
+
+    allPets = snap.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
+    renderGallery(allPets);
+  } catch (err) {
+    console.error('Error loading pets:', err);
+    resultCountEl.textContent = 'Could not load pets right now.';
+  }
 }
 
-// ── pets.html — browse + filter ───────────────────────────────
-const petGrid = document.getElementById("petGrid");
-if (petGrid) {
-  let allPets = [];
+// ---------- Render gallery cards ----------
+function renderGallery(pets) {
+  galleryEl.innerHTML = '';
 
-  async function loadPets() {
-    const snap = await getDocs(query(collection(db, "pets"), orderBy("addedAt", "desc")));
-    allPets = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    applyFilters();
+  if (pets.length === 0) {
+    emptyEl.style.display = 'block';
+    resultCountEl.textContent = '0 pets found';
+    return;
   }
 
-  function applyFilters() {
-    const species = document.getElementById("filterSpecies")?.value;
-    const origin  = document.getElementById("filterOrigin")?.value;
-    const age     = document.getElementById("filterAge")?.value;
-    const status  = document.getElementById("filterStatus")?.value;
-    const search  = document.getElementById("searchInput")?.value.toLowerCase();
+  emptyEl.style.display = 'none';
+  resultCountEl.textContent = `${pets.length} pet${pets.length === 1 ? '' : 's'} found`;
 
-    let filtered = allPets.filter(p => {
-      if (species && p.species !== species) return false;
-      if (origin  && p.origin  !== origin)  return false;
-      if (status  && p.status  !== status)  return false;
-      if (age) {
-        const a = parseFloat(p.age) || 0;
-        if (age === "young"  && a > 1)   return false;
-        if (age === "adult"  && (a < 1 || a > 7)) return false;
-        if (age === "senior" && a < 7)   return false;
-      }
-      if (search && !p.name.toLowerCase().includes(search) &&
-          !(p.breed || "").toLowerCase().includes(search)) return false;
-      return true;
-    });
+  const fragment = document.createDocumentFragment();
 
-    document.getElementById("resultsCount").textContent = `${filtered.length} pet${filtered.length !== 1 ? "s" : ""}`;
-    petGrid.innerHTML = filtered.length
-      ? filtered.map(buildPetCard).join("")
-      : `<p class="empty-state">No pets match your filters.</p>`;
-  }
+  pets.forEach(pet => {
+    const card = document.createElement('article');
+    card.className = 'pet-card';
 
-  ["filterSpecies","filterOrigin","filterAge","filterStatus"].forEach(id =>
-    document.getElementById(id)?.addEventListener("change", applyFilters)
-  );
-  document.getElementById("searchInput")?.addEventListener("input", applyFilters);
-  document.getElementById("resetFilters")?.addEventListener("click", () => {
-    ["filterSpecies","filterOrigin","filterAge","filterStatus"].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.value = id === "filterStatus" ? "available" : "";
-    });
-    const s = document.getElementById("searchInput");
-    if (s) s.value = "";
-    applyFilters();
+    const photo = pet.photoURL || pet.imageUrl || 'assets/placeholder-pet.jpg';
+    const ageLabel = formatAgeLabel(pet.age, pet.ageGroup);
+    const originLabel = formatOriginLabel(pet.origin);
+
+    card.innerHTML = `
+      <div class="pet-card-photo">
+        <img src="${escapeHtml(photo)}" alt="${escapeHtml(pet.name || 'Pet')}" loading="lazy">
+        <span class="pet-card-badge">${escapeHtml(ageLabel)}</span>
+      </div>
+      <div class="pet-card-body">
+        <h3 class="pet-card-name">${escapeHtml(pet.name || 'Unnamed')}</h3>
+        <p class="pet-card-breed">${escapeHtml(pet.breed || pet.species || 'Mixed breed')}</p>
+        <p class="pet-card-origin">${escapeHtml(originLabel)}${pet.shelterName ? ' · ' + escapeHtml(pet.shelterName) : ''}</p>
+        <a href="pet-detail.html?id=${encodeURIComponent(pet.id)}" class="btn btn-primary btn-small pet-card-btn">
+          Pet Details →
+        </a>
+      </div>
+    `;
+
+    fragment.appendChild(card);
   });
 
-  loadPets();
+  galleryEl.appendChild(fragment);
 }
 
-// ── pet-detail.html ───────────────────────────────────────────
-const petDetailContent = document.getElementById("petDetailContent");
-if (petDetailContent) {
-  const petId = getParam("id");
-  if (!petId) {
-    document.getElementById("loadingMsg").textContent = "No pet ID specified.";
-  } else {
-    (async () => {
-      const snap = await getDoc(doc(db, "pets", petId));
-      if (!snap.exists()) {
-        document.getElementById("loadingMsg").textContent = "Pet not found.";
-        return;
-      }
-      const p = { id: snap.id, ...snap.data() };
-      const statusClass = { available: "badge-available", pending: "badge-pending", adopted: "badge-adopted" }[p.status] || "";
+// ---------- Filtering ----------
+function applyFilters() {
+  const searchVal = filters.search.value.trim().toLowerCase();
+  const speciesVal = filters.species.value;
+  const ageVal = filters.age.value;
+  const genderVal = filters.gender.value;
+  const originVal = filters.origin.value;
+  const sizeVal = filters.size.value;
 
-      document.getElementById("loadingMsg").hidden = true;
-      petDetailContent.hidden = false;
+  const filtered = allPets.filter(pet => {
+    if (searchVal) {
+      const haystack = `${pet.name || ''} ${pet.breed || ''}`.toLowerCase();
+      if (!haystack.includes(searchVal)) return false;
+    }
+    if (speciesVal && (pet.species || '').toLowerCase() !== speciesVal) return false;
+    if (ageVal && (pet.ageGroup || '').toLowerCase() !== ageVal) return false;
+    if (genderVal && (pet.gender || '').toLowerCase() !== genderVal) return false;
+    if (originVal && (pet.origin || '').toLowerCase() !== originVal) return false;
+    if (sizeVal && (pet.size || '').toLowerCase() !== sizeVal) return false;
+    return true;
+  });
 
-      document.getElementById("petImage").src         = p.imageURL || "https://placehold.co/600x600?text=No+Photo";
-      document.getElementById("petImage").alt         = p.name;
-      document.getElementById("petStatusBadge").textContent  = p.status;
-      document.getElementById("petStatusBadge").className    = `badge ${statusClass}`;
-      document.getElementById("petOriginTag").textContent    = originLabel(p.origin);
-      document.getElementById("petName").textContent         = p.name;
-      document.getElementById("petNameInline").textContent   = p.name;
-      document.getElementById("petMeta").textContent         =
-        `${p.species}${p.breed ? " · " + p.breed : ""} · ${p.age ?? "?"} yr${p.age !== 1 ? "s" : ""} · ${p.gender || ""}`;
-      document.getElementById("petColor").textContent        = p.color || "—";
-      document.getElementById("petVaccinated").textContent   = p.vaccinated  ? "Yes ✓" : "No";
-      document.getElementById("petNeutered").textContent     = p.neutered    ? "Yes ✓" : "No";
-      document.getElementById("petHealthStatus").textContent = p.healthStatus || "—";
-      document.getElementById("petDescription").textContent  = p.description || "No description provided.";
+  renderGallery(filtered);
+}
 
-      document.getElementById("healthRecordsBtn").href = `pet-health.html?id=${p.id}&name=${encodeURIComponent(p.name)}`;
-
-      // Adopt button — only if available and logged in
-      const adoptBtn = document.getElementById("adoptBtn");
-      onAuthStateChanged(auth, user => {
-        if (!user || p.status !== "available") {
-          adoptBtn.textContent = p.status !== "available" ? "Not available" : "Log in to adopt";
-          adoptBtn.classList.replace("btn-primary", "btn-outline");
-          adoptBtn.href = user ? "#" : "login.html";
-        } else {
-          adoptBtn.href = `adopt.html?id=${p.id}&name=${encodeURIComponent(p.name)}`;
-        }
-      });
-    })();
+// ---------- Helpers ----------
+function formatAgeLabel(age, ageGroup) {
+  if (ageGroup) {
+    const map = { baby: 'Baby', young: 'Young', adult: 'Adult', senior: 'Senior' };
+    return map[ageGroup] || ageGroup;
   }
+  if (typeof age === 'number') return `${age} ${age === 1 ? 'yr' : 'yrs'}`;
+  return 'Age unknown';
 }
 
-// ── index.html — featured pets (latest 6 available) ───────────
-const featuredPets = document.getElementById("featuredPets");
-if (featuredPets) {
-  (async () => {
-    const snap = await getDocs(
-      query(collection(db, "pets"), where("status", "==", "available"), orderBy("addedAt", "desc"), limit(6))
-    );
-    const pets = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    featuredPets.innerHTML = pets.length
-      ? pets.map(buildPetCard).join("")
-      : `<p class="empty-state">No pets listed yet.</p>`;
-  })();
+function formatOriginLabel(origin) {
+  const map = {
+    shelter_born: 'Shelter',
+    rescued: 'Rescued',
+    surrender: 'Owner Surrender'
+  };
+  return map[origin] || 'Shelter';
 }
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function debounce(fn, delay = 150) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
+}
+
+// ---------- Event wiring ----------
+filters.search.addEventListener('input', debounce(applyFilters, 150));
+filters.species.addEventListener('change', applyFilters);
+filters.age.addEventListener('change', applyFilters);
+filters.gender.addEventListener('change', applyFilters);
+filters.origin.addEventListener('change', applyFilters);
+filters.size.addEventListener('change', applyFilters);
+
+document.getElementById('clearFiltersBtn').addEventListener('click', () => {
+  Object.values(filters).forEach(el => { el.value = ''; });
+  renderGallery(allPets);
+});
+
+// ---------- Init ----------
+loadPets();
