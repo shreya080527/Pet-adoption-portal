@@ -1,165 +1,120 @@
-// pets.js — Browse/filter gallery for pets.html
-// Loads ALL pets once, renders them as gallery cards, then filters
-// client-side live as the user types/selects (no extra Firestore reads per keystroke).
-
-import { db } from './firebase-config.js';
-import {
-  collection,
-  getDocs,
-  query,
-  where
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+// ============================================================
+// pets.js  –  Firebase v8 compat syntax (matches your setup)
+// ============================================================
 
 let allPets = [];
 
-const galleryEl = document.getElementById('petGallery');
-const emptyEl = document.getElementById('galleryEmpty');
-const resultCountEl = document.getElementById('resultCount');
-
-const filters = {
-  search: document.getElementById('filterSearch'),
-  species: document.getElementById('filterSpecies'),
-  age: document.getElementById('filterAge'),
-  gender: document.getElementById('filterGender'),
-  origin: document.getElementById('filterOrigin'),
-  size: document.getElementById('filterSize'),
-};
-
-const clearBtn = document.getElementById('clearFiltersBtn');
-
-// ---------- Load pets from Firestore ----------
 async function loadPets() {
-  try {
-    // Only show pets that are available for adoption in the public gallery.
-    // Adjust/remove the where() clause if you want surrendered-but-pending pets hidden differently.
-    const petsRef = collection(db, 'pets');
-    const q = query(petsRef, where('status', '!=', 'adopted'));
-    const snap = await getDocs(q);
+  const gallery = document.getElementById('petGallery');
+  const empty   = document.getElementById('galleryEmpty');
+  const count   = document.getElementById('resultCount');
 
-    allPets = snap.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
-    renderGallery(allPets);
+  if (gallery) gallery.innerHTML = '<p style="text-align:center;padding:2rem;">Loading pets...</p>';
+
+  try {
+    const snap = await db.collection('pets')
+      .where('status', '==', 'available')
+      .get();
+
+    allPets = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    allPets.sort((a, b) => {
+      const aTime = a.addedAt && a.addedAt.toMillis ? a.addedAt.toMillis() : 0;
+      const bTime = b.addedAt && b.addedAt.toMillis ? b.addedAt.toMillis() : 0;
+      return bTime - aTime;
+    });
+
+    renderPets(allPets);
+
   } catch (err) {
     console.error('Error loading pets:', err);
-    resultCountEl.textContent = 'Could not load pets right now.';
+    if (gallery) {
+      gallery.innerHTML = '<p style="text-align:center;padding:2rem;color:red;">Error: ' + err.message + '</p>';
+    }
   }
 }
 
-// ---------- Render gallery cards ----------
-function renderGallery(pets) {
-  galleryEl.innerHTML = '';
+function renderPets(pets) {
+  const gallery = document.getElementById('petGallery');
+  const empty   = document.getElementById('galleryEmpty');
+  const count   = document.getElementById('resultCount');
+
+  if (!gallery) return;
+
+  if (count) count.textContent = pets.length + ' pet' + (pets.length !== 1 ? 's' : '') + ' found';
 
   if (pets.length === 0) {
-    emptyEl.style.display = 'block';
-    resultCountEl.textContent = '0 pets found';
+    gallery.innerHTML = '';
+    if (empty) empty.style.display = 'block';
     return;
   }
 
-  emptyEl.style.display = 'none';
-  resultCountEl.textContent = `${pets.length} pet${pets.length === 1 ? '' : 's'} found`;
+  if (empty) empty.style.display = 'none';
 
-  const fragment = document.createDocumentFragment();
+  const originLabel = {
+    shelter_born:   '🏠 Born in Shelter',
+    rescued:        '🚑 Rescued',
+    owner_given_up: '💛 Owner Given Up'
+  };
 
-  pets.forEach(pet => {
-    const card = document.createElement('article');
-    card.className = 'pet-card';
-
-    const photo = pet.photoURL || pet.imageUrl || 'assets/placeholder-pet.jpg';
-    const ageLabel = formatAgeLabel(pet.age, pet.ageGroup);
-    const originLabel = formatOriginLabel(pet.origin);
-
-    card.innerHTML = `
-      <div class="pet-card-photo">
-        <img src="${escapeHtml(photo)}" alt="${escapeHtml(pet.name || 'Pet')}" loading="lazy">
-        <span class="pet-card-badge">${escapeHtml(ageLabel)}</span>
-      </div>
-      <div class="pet-card-body">
-        <h3 class="pet-card-name">${escapeHtml(pet.name || 'Unnamed')}</h3>
-        <p class="pet-card-breed">${escapeHtml(pet.breed || pet.species || 'Mixed breed')}</p>
-        <p class="pet-card-origin">${escapeHtml(originLabel)}${pet.shelterName ? ' · ' + escapeHtml(pet.shelterName) : ''}</p>
-        <a href="pet-detail.html?id=${encodeURIComponent(pet.id)}" class="btn btn-primary btn-small pet-card-btn">
-          Pet Details →
-        </a>
-      </div>
-    `;
-
-    fragment.appendChild(card);
-  });
-
-  galleryEl.appendChild(fragment);
+  gallery.innerHTML = pets.map(function(pet) {
+    const imgSrc = pet.imageURL ? pet.imageURL : 'https://placehold.co/400x300/f0f4f8/888?text=No+Image';
+    return '<div class="pet-card" onclick="window.location.href=\'pet-detail.html?id=' + pet.id + '\'" style="cursor:pointer;">'
+      + '<div class="pet-card-img"><img src="' + imgSrc + '" alt="' + (pet.name || '') + '" onerror="this.src=\'https://placehold.co/400x300/f0f4f8/888?text=No+Image\'"></div>'
+      + '<div class="pet-card-body">'
+      + '<h3 class="pet-name">' + (pet.name || 'Unknown') + '</h3>'
+      + '<p class="pet-meta">' + (pet.species || '') + (pet.breed ? ' · ' + pet.breed : '') + '</p>'
+      + '<div class="pet-tags">'
+      + (pet.age    ? '<span class="tag">' + pet.age + '</span>' : '')
+      + (pet.gender ? '<span class="tag">' + pet.gender + '</span>' : '')
+      + (pet.vaccinated ? '<span class="tag tag-green">Vaccinated ✓</span>' : '')
+      + '</div>'
+      + '<p class="pet-origin">' + (originLabel[pet.origin] || '') + '</p>'
+      + '<button class="btn btn-primary btn-sm">View Details</button>'
+      + '</div></div>';
+  }).join('');
 }
 
-// ---------- Filtering ----------
 function applyFilters() {
-  const searchVal = filters.search.value.trim().toLowerCase();
-  const speciesVal = filters.species.value;
-  const ageVal = filters.age.value;
-  const genderVal = filters.gender.value;
-  const originVal = filters.origin.value;
-  const sizeVal = filters.size.value;
+  var search  = document.getElementById('filterSearch')  ? document.getElementById('filterSearch').value.toLowerCase()  : '';
+  var species = document.getElementById('filterSpecies') ? document.getElementById('filterSpecies').value.toLowerCase() : '';
+  var gender  = document.getElementById('filterGender')  ? document.getElementById('filterGender').value.toLowerCase()  : '';
+  var size    = document.getElementById('filterSize')    ? document.getElementById('filterSize').value.toLowerCase()    : '';
+  var origin  = document.getElementById('filterOrigin')  ? document.getElementById('filterOrigin').value.toLowerCase()  : '';
 
-  const filtered = allPets.filter(pet => {
-    if (searchVal) {
-      const haystack = `${pet.name || ''} ${pet.breed || ''}`.toLowerCase();
-      if (!haystack.includes(searchVal)) return false;
-    }
-    if (speciesVal && (pet.species || '').toLowerCase() !== speciesVal) return false;
-    if (ageVal && (pet.ageGroup || '').toLowerCase() !== ageVal) return false;
-    if (genderVal && (pet.gender || '').toLowerCase() !== genderVal) return false;
-    if (originVal && (pet.origin || '').toLowerCase() !== originVal) return false;
-    if (sizeVal && (pet.size || '').toLowerCase() !== sizeVal) return false;
-    return true;
+  var filtered = allPets.filter(function(pet) {
+    var matchSearch  = !search  || (pet.name  || '').toLowerCase().includes(search) || (pet.breed || '').toLowerCase().includes(search);
+    var matchSpecies = !species || (pet.species || '').toLowerCase() === species;
+    var matchGender  = !gender  || (pet.gender  || '').toLowerCase() === gender;
+    var matchSize    = !size    || (pet.size    || '').toLowerCase() === size;
+    var matchOrigin  = !origin  || (pet.origin  || '').toLowerCase() === origin;
+    return matchSearch && matchSpecies && matchGender && matchSize && matchOrigin;
   });
 
-  renderGallery(filtered);
+  renderPets(filtered);
 }
 
-// ---------- Helpers ----------
-function formatAgeLabel(age, ageGroup) {
-  if (ageGroup) {
-    const map = { baby: 'Baby', young: 'Young', adult: 'Adult', senior: 'Senior' };
-    return map[ageGroup] || ageGroup;
+document.addEventListener('DOMContentLoaded', function() {
+  if (!document.getElementById('petGallery')) return;
+
+  loadPets();
+
+  ['filterSearch', 'filterSpecies', 'filterGender', 'filterSize', 'filterOrigin'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input',  applyFilters);
+      el.addEventListener('change', applyFilters);
+    }
+  });
+
+  var clearBtn = document.getElementById('clearFiltersBtn');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function() {
+      ['filterSearch', 'filterSpecies', 'filterGender', 'filterSize', 'filterOrigin'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      renderPets(allPets);
+    });
   }
-  if (typeof age === 'number') return `${age} ${age === 1 ? 'yr' : 'yrs'}`;
-  return 'Age unknown';
-}
-
-function formatOriginLabel(origin) {
-  const map = {
-    shelter_born: 'Shelter',
-    rescued: 'Rescued',
-    surrender: 'Owner Surrender'
-  };
-  return map[origin] || 'Shelter';
-}
-
-function escapeHtml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-function debounce(fn, delay = 150) {
-  let timer;
-  return (...args) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => fn(...args), delay);
-  };
-}
-
-// ---------- Event wiring ----------
-filters.search.addEventListener('input', debounce(applyFilters, 150));
-filters.species.addEventListener('change', applyFilters);
-filters.age.addEventListener('change', applyFilters);
-filters.gender.addEventListener('change', applyFilters);
-filters.origin.addEventListener('change', applyFilters);
-filters.size.addEventListener('change', applyFilters);
-
-document.getElementById('clearFiltersBtn').addEventListener('click', () => {
-  Object.values(filters).forEach(el => { el.value = ''; });
-  renderGallery(allPets);
 });
-
-// ---------- Init ----------
-loadPets();

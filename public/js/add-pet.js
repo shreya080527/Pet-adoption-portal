@@ -1,74 +1,61 @@
-// ============================================================
-// add-pet.js — shelter/admin adds a pet (shelter-born / rescued)
-// ============================================================
-
-import { db, storage }     from "./firebase-config.js";
-import { requireAdmin }    from "./auth.js";
-import {
-  collection, addDoc, serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import {
-  ref, uploadBytes, getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
-import { wireImagePreview, showError, hideError, showSuccess, setLoading, toast } from "./utils.js";
-
-wireImagePreview("petImageFile", "imagePreview");
-
-const form = document.getElementById("addPetForm");
-if (form) {
-  // Only admins/staff may add shelter pets
-  requireAdmin().then(admin => {
-    if (!admin) return;
-    document.getElementById("authGate")?.setAttribute("hidden", true);
-    form.hidden = false;
+document.addEventListener("DOMContentLoaded", function () {
+  auth.onAuthStateChanged(async function (user) {
+    if (!user) { window.location.href = "login.html"; return; }
+    var snap = await db.collection("users").doc(user.uid).get();
+    var role = snap.exists ? snap.data().role : "";
+    if (role !== "admin" && role !== "owner") {
+      document.body.innerHTML = "<div style='text-align:center;padding:4rem;'><h2>Access Denied</h2><a href='index.html'>Go Home</a></div>";
+      return;
+    }
+    var form = document.getElementById("addPetForm");
+    if (form) form.hidden = false;
+    var gate = document.getElementById("authGate");
+    if (gate) gate.hidden = true;
   });
-
-  form.addEventListener("submit", async (e) => {
+  var form = document.getElementById("addPetForm");
+  if (!form) return;
+  form.addEventListener("submit", async function (e) {
     e.preventDefault();
-    hideError("addPetError");
-
-    const name        = document.getElementById("petName").value.trim();
-    const species     = document.getElementById("petSpecies").value;
-    const breed       = document.getElementById("petBreed").value.trim();
-    const age         = parseFloat(document.getElementById("petAge").value);
-    const gender      = document.getElementById("petGender").value;
-    const color       = document.getElementById("petColor").value.trim();
-    const origin      = document.getElementById("petOrigin").value;
-    const vaccinated  = document.getElementById("petVaccinated").checked;
-    const neutered    = document.getElementById("petNeutered").checked;
-    const healthStatus = document.getElementById("petHealthStatus").value;
-    const description = document.getElementById("petDescription").value.trim();
-    const imageFile   = document.getElementById("petImageFile").files[0];
-
-    if (!name || !species || !origin || !description || !imageFile) {
-      showError("addPetError", "Please fill in all required fields and select a photo."); return;
+    var name = document.getElementById("petName").value.trim();
+    var species = document.getElementById("petSpecies").value;
+    var breed = document.getElementById("petBreed").value.trim();
+    var age = document.getElementById("petAge").value.trim();
+    var gender = document.getElementById("petGender").value;
+    var color = document.getElementById("petColor").value.trim();
+    var origin = document.getElementById("petOrigin").value;
+    var vaccinated = document.getElementById("petVaccinated").checked;
+    var neutered = document.getElementById("petNeutered").checked;
+    var healthStatus = document.getElementById("petHealthStatus").value;
+    var description = document.getElementById("petDescription").value.trim();
+    var imageURLEl = document.getElementById("petImageURL");
+    var imageURL = imageURLEl ? imageURLEl.value.trim() : "";
+    var errorEl = document.getElementById("addPetError");
+    var btn = document.getElementById("addPetBtn");
+    if (!name || !species || !origin || !description) {
+      if (errorEl) { errorEl.textContent = "Please fill in all required fields."; errorEl.hidden = false; }
+      return;
     }
-
-    setLoading("addPetBtn", true, "Add Pet");
+    if (errorEl) errorEl.hidden = true;
+    if (btn) { btn.disabled = true; btn.textContent = "Saving..."; }
     try {
-      // Upload image
-      const imgRef = ref(storage, `pets/${Date.now()}_${imageFile.name}`);
-      await uploadBytes(imgRef, imageFile);
-      const imageURL = await getDownloadURL(imgRef);
-
-      // Save to Firestore
-      await addDoc(collection(db, "pets"), {
-        name, species, breed, age, gender, color, origin,
-        vaccinated, neutered, healthStatus, description, imageURL,
-        status: "available",
-        addedAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
+      await db.collection("pets").add({
+        name: name, species: species, breed: breed, age: age,
+        gender: gender, color: color, origin: origin,
+        vaccinated: vaccinated, neutered: neutered,
+        healthStatus: healthStatus, description: description,
+        imageURL: imageURL, status: "available",
+        addedBy: auth.currentUser ? auth.currentUser.uid : "",
+        addedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       });
-
-      toast("Pet added successfully!");
+      var successEl = document.getElementById("addPetSuccess");
+      if (successEl) { successEl.textContent = "Pet listed successfully! ??"; successEl.hidden = false; }
       form.reset();
-      document.getElementById("imagePreview").hidden = true;
-      document.getElementById("addPetSuccess").textContent = "Pet listed successfully.";
-      document.getElementById("addPetSuccess").hidden = false;
+      setTimeout(function () { window.location.href = "pets.html"; }, 2000);
     } catch (err) {
-      showError("addPetError", err.message);
+      if (errorEl) { errorEl.textContent = "Error: " + err.message; errorEl.hidden = false; }
     } finally {
-      setLoading("addPetBtn", false, "Add Pet");
+      if (btn) { btn.disabled = false; btn.textContent = "Add Pet"; }
     }
   });
-}
+});

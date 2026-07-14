@@ -1,104 +1,176 @@
 // ============================================================
-// pet-health.js — pet-health.html
+// pet-health.js — pet-health.html (Firebase v8 compat syntax)
 // Admins can add records; everyone can read them.
 // ============================================================
 
-import { db }    from "./firebase-config.js";
-import { auth }  from "./auth.js";
-import {
-  collection, addDoc, getDocs,
-  query, where, orderBy, serverTimestamp, doc, getDoc
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getParam, formatDate, showError, hideError, setLoading, toast } from "./utils.js";
+// Get URL parameters
+var params = new URLSearchParams(window.location.search);
+var petId = params.get('id');
+var petName = 'Pet';
 
-const petId   = getParam("id");
-const petName = getParam("name") || "Pet";
+console.log('Page loaded. URL:', window.location.href);
+console.log('Pet ID from URL:', petId);
+
+if (!petId) {
+  console.error('No pet ID found in URL!');
+  document.getElementById('healthTimeline').innerHTML = '<p class="empty-state" style="color:red;">Error: No pet ID provided. Please access this page from a pet detail page.</p>';
+} else {
+  console.log('Pet ID is valid, proceeding to load records');
+}
+
+// Fetch pet name from database
+async function loadPetName() {
+  if (!petId) return;
+  try {
+    var snap = await db.collection('pets').doc(petId).get();
+    if (snap.exists) {
+      petName = snap.data().name || 'Pet';
+      var heading = document.getElementById('healthPetName');
+      if (heading) heading.textContent = petName;
+      console.log('Pet name loaded:', petName);
+    } else {
+      console.error('Pet not found in database with ID:', petId);
+    }
+  } catch (err) {
+    console.error('Error loading pet name:', err);
+  }
+}
 
 // Set page heading
-const heading = document.getElementById("healthPetName");
-if (heading) heading.textContent = decodeURIComponent(petName);
+var heading = document.getElementById('healthPetName');
+if (heading) heading.textContent = petName;
 
 // Back link
-const backLink = document.getElementById("backToPet");
-if (backLink && petId) backLink.href = `pet-detail.html?id=${petId}`;
+var backLink = document.getElementById('backToPet');
+if (backLink && petId) backLink.href = 'pet-detail.html?id=' + petId;
 
-// ── Load records ──────────────────────────────────────────────
-const timeline = document.getElementById("healthTimeline");
+// Load records
+var timeline = document.getElementById('healthTimeline');
+
+// Load pet name and records
+loadPetName();
 
 async function loadRecords() {
-  if (!timeline || !petId) return;
-  const snap = await getDocs(
-    query(collection(db, "pet_health_records"),
-      where("petId", "==", petId),
-      orderBy("date", "desc"))
-  );
-  if (snap.empty) {
-    timeline.innerHTML = `<p class="empty-state">No health records yet.</p>`;
+  if (!timeline || !petId) {
+    console.log('Missing timeline or petId:', { timeline: !!timeline, petId: petId });
     return;
   }
-  timeline.innerHTML = snap.docs.map(d => {
-    const r = d.data();
-    return `
-      <div class="timeline-item">
-        <div>
-          <div class="timeline-date">${r.date || "—"}</div>
-        </div>
-        <div>
-          <span class="timeline-type">${r.type}</span>
-          <p><strong>${r.description}</strong></p>
-          ${r.vetName    ? `<p>Vet: ${r.vetName}</p>` : ""}
-          ${r.nextDueDate ? `<p>Next due: ${r.nextDueDate}</p>` : ""}
-        </div>
-      </div>`;
-  }).join("");
+  try {
+    console.log('Loading health records for petId:', petId);
+    var snap = await db.collection('pet_health_records')
+      .where('petId', '==', petId)
+      .orderBy('date', 'desc')
+      .get();
+
+    console.log('Health records query result:', snap.size, 'records found');
+
+    if (snap.empty) {
+      timeline.innerHTML = '<p class="empty-state">No health records yet.</p>';
+      return;
+    }
+
+    timeline.innerHTML = snap.docs.map(function (d) {
+      var r = d.data();
+      console.log('Record data:', r);
+      return '<div class="timeline-item">' +
+        '<div>' +
+        '<div class="timeline-date">' + (r.date || '—') + '</div>' +
+        '</div>' +
+        '<div>' +
+        '<span class="timeline-type">' + r.type + '</span>' +
+        '<p><strong>' + r.description + '</strong></p>' +
+        (r.vetName ? '<p>Vet: ' + r.vetName + '</p>' : '') +
+        (r.nextDueDate ? '<p>Next due: ' + r.nextDueDate + '</p>' : '') +
+        '</div>' +
+        '</div>';
+    }).join('');
+    console.log('Timeline HTML updated');
+  } catch (err) {
+    console.error('Error loading health records:', err);
+    timeline.innerHTML = '<p class="empty-state">Error loading health records: ' + err.message + '</p>';
+  }
 }
 loadRecords();
 
-// ── Admin-only: show add-record form ──────────────────────────
-onAuthStateChanged(auth, async user => {
+// Admin-only: show add-record form
+auth.onAuthStateChanged(async function (user) {
   if (!user) return;
-  const snap = await getDoc(doc(db, "users", user.uid));
-  if (snap.exists() && snap.data().role === "admin") {
-    document.getElementById("addRecordBar").hidden = false;
+  try {
+    var snap = await db.collection('users').doc(user.uid).get();
+    if (snap.exists && snap.data().role === 'admin') {
+      var addRecordBar = document.getElementById('addRecordBar');
+      if (addRecordBar) addRecordBar.hidden = false;
+    }
+  } catch (err) {
+    console.error('Error checking admin status:', err);
   }
 });
 
 // Toggle add form
-document.getElementById("toggleAddRecordForm")?.addEventListener("click", () => {
-  const form = document.getElementById("addRecordForm");
-  form.hidden = !form.hidden;
-});
-document.getElementById("cancelAddRecord")?.addEventListener("click", () => {
-  document.getElementById("addRecordForm").hidden = true;
-});
+var toggleAddRecordForm = document.getElementById('toggleAddRecordForm');
+if (toggleAddRecordForm) {
+  toggleAddRecordForm.addEventListener('click', function () {
+    var form = document.getElementById('addRecordForm');
+    form.hidden = !form.hidden;
+  });
+}
+
+var cancelAddRecord = document.getElementById('cancelAddRecord');
+if (cancelAddRecord) {
+  cancelAddRecord.addEventListener('click', function () {
+    document.getElementById('addRecordForm').hidden = true;
+  });
+}
 
 // Submit record
-document.getElementById("addRecordForm")?.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  hideError("recordError");
+var addRecordForm = document.getElementById('addRecordForm');
+if (addRecordForm) {
+  addRecordForm.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    hideError('recordError');
 
-  const type        = document.getElementById("recordType").value;
-  const date        = document.getElementById("recordDate").value;
-  const description = document.getElementById("recordDescription").value.trim();
-  const vetName     = document.getElementById("recordVet").value.trim();
-  const nextDueDate = document.getElementById("recordNextDue").value;
+    var type = document.getElementById('recordType').value;
+    var date = document.getElementById('recordDate').value;
+    var description = document.getElementById('recordDescription').value.trim();
+    var vetName = document.getElementById('recordVet').value.trim();
+    var nextDueDate = document.getElementById('recordNextDue').value;
 
-  if (!date || !description) {
-    showError("recordError", "Date and description are required."); return;
-  }
+    if (!date || !description) {
+      showError('recordError', 'Date and description are required.');
+      return;
+    }
 
-  setLoading("addRecordForm", true);
-  try {
-    await addDoc(collection(db, "pet_health_records"), {
-      petId, type, date, description, vetName, nextDueDate,
-      createdAt: serverTimestamp()
-    });
-    toast("Health record added!");
-    document.getElementById("addRecordForm").reset();
-    document.getElementById("addRecordForm").hidden = true;
-    loadRecords();
-  } catch (err) {
-    showError("recordError", err.message);
-  }
-});
+    var submitBtn = addRecordForm.querySelector('button[type="submit"]');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Saving...';
+    }
+
+    try {
+      console.log('Saving health record:', { petId, type, date, description, vetName, nextDueDate });
+      var docRef = await db.collection('pet_health_records').add({
+        petId: petId,
+        type: type,
+        date: date,
+        description: description,
+        vetName: vetName,
+        nextDueDate: nextDueDate,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      console.log('Health record saved with ID:', docRef.id);
+      toast('Health record added!');
+      addRecordForm.reset();
+      addRecordForm.hidden = true;
+      console.log('Reloading health records...');
+      await loadRecords();
+    } catch (err) {
+      console.error('Error saving health record:', err);
+      showError('recordError', err.message);
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Save Record';
+      }
+    }
+  });
+}

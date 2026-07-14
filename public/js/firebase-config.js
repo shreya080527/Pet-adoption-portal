@@ -1,24 +1,19 @@
-// ============================================================
-// firebase-config.js
-// Replace the values below with your own Firebase project config.
-// Firebase Console → Project Settings → Your Apps → SDK setup
-// ============================================================
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth }       from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore }  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getStorage }    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
-
-const firebaseConfig = {
-  apiKey:            "YOUR_API_KEY",
-  authDomain:        "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId:         "YOUR_PROJECT_ID",
-  storageBucket:     "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId:             "YOUR_APP_ID"
+var firebaseConfig = {
+  apiKey: "AIzaSyD0b93TexBnb5sIRBcby9AfOOjiL_kizN4",
+  authDomain: "pawpath-d2fe7.firebaseapp.com",
+  projectId: "pawpath-d2fe7",
+  storageBucket: "pawpath-d2fe7.firebasestorage.app",
+  messagingSenderId: "767720143098",
+  appId: "1:767720143098:web:9808908b3ff6842c2ef143"
 };
+firebase.initializeApp(firebaseConfig);
+var auth = firebase.auth();
+var db = firebase.firestore();
+var storage = firebase.storage();
 
-const app     = initializeApp(firebaseConfig);
-export const auth    = getAuth(app);
-export const db      = getFirestore(app);
-export const storage = getStorage(app);
+// Connect to Firebase Emulators when running locally
+if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+  db.useEmulator('127.0.0.1', 8081);
+  auth.useEmulator('http://127.0.0.1:9099');
+  console.log('Connected to Firebase Emulators');
+}

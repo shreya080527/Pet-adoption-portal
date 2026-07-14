@@ -1,85 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pet Details — PawPath</title>
-  <link rel="stylesheet" href="css/style.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pet Details — PawPath</title>
+<link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
-  <header class="site-header">
-    <div class="container nav-inner">
-      <a href="index.html" class="brand"><span class="brand-mark">🐾</span> PawPath</a>
-      <nav class="main-nav" id="mainNav">
-        <a href="pets.html">Browse Pets</a>
-        <a href="lost-found.html">Lost &amp; Found</a>
-        <a href="resources.html">Resources</a>
-        <a href="found-pet.html">Report Stray</a>
-        <a href="surrender-pet.html">Give Up a Pet</a>
-      </nav>
-      <div class="nav-actions" id="navActions">
-        <a href="login.html" class="btn btn-ghost">Log In</a>
-        <a href="register.html" class="btn btn-primary">Sign Up</a>
+<!-- NAV: paste your site's actual header here from pets.html so it matches -->
+<header class="navbar">
+  <a href="index.html" class="logo">🐾 PawPath</a>
+  <nav>
+    <a href="pets.html">Pets</a>
+    <a href="lost-found.html">Lost & Found</a>
+    <a href="resources.html">Resources</a>
+    <a href="dashboard.html">Dashboard</a>
+  </nav>
+</header>
+
+<main class="container">
+
+  <p id="loadingMsg">Loading pet details...</p>
+
+  <div id="petDetailContent" hidden>
+
+    <div class="pet-detail-grid">
+
+      <div class="pet-detail-image">
+        <img id="petImage" src="" alt="Pet photo" />
+        <span id="petStatusBadge" class="badge"></span>
       </div>
-      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
-    </div>
-  </header>
 
-  <main>
-    <div class="container">
-      <a href="pets.html" class="link-back">← Back to all pets</a>
-    </div>
+      <div class="pet-detail-info">
+        <h1 id="petName"></h1>
+        <p id="petMeta" class="pet-meta"></p>
+        <span id="petOriginTag" class="origin-tag"></span>
 
-    <section class="section" id="petDetailSection">
-      <div class="container">
-        <p class="empty-state" id="loadingMsg">Loading pet details…</p>
+        <table class="pet-info-table">
+          <tr><td>Color</td><td id="petColor"></td></tr>
+          <tr><td>Vaccinated</td><td id="petVaccinated"></td></tr>
+          <tr><td>Neutered</td><td id="petNeutered"></td></tr>
+          <tr><td>Health Status</td><td id="petHealthStatus"></td></tr>
+        </table>
 
-        <div class="pet-detail-layout" id="petDetailContent" hidden>
-          <div class="pet-detail-media">
-            <img id="petImage" src="" alt="" />
-            <span class="badge" id="petStatusBadge"></span>
-          </div>
+        <h3>About <span id="petNameInline"></span></h3>
+        <p id="petDescription"></p>
 
-          <div class="pet-detail-info">
-            <span class="origin-tag" id="petOriginTag"></span>
-            <h1 id="petName"></h1>
-            <p class="pet-meta" id="petMeta"></p>
-
-            <div class="pet-attrs">
-              <div><span>Color</span><strong id="petColor"></strong></div>
-              <div><span>Vaccinated</span><strong id="petVaccinated"></strong></div>
-              <div><span>Neutered / Spayed</span><strong id="petNeutered"></strong></div>
-              <div><span>Health status</span><strong id="petHealthStatus"></strong></div>
-            </div>
-
-            <h3>About <span id="petNameInline"></span></h3>
-            <p id="petDescription"></p>
-
-            <div class="pet-detail-ctas">
-              <a href="#" class="btn btn-primary btn-lg" id="adoptBtn">Start Adoption Request</a>
-              <a href="#" class="btn btn-outline" id="healthRecordsBtn">View Health Records</a>
-            </div>
-
-            <p class="form-error" id="petError" hidden></p>
-          </div>
+        <div class="pet-detail-actions">
+          <a id="adoptBtn" href="#" class="btn btn-primary">Adopt Me</a>
+          <a id="healthRecordsBtn" href="#" class="btn btn-outline">View Health Records</a>
         </div>
       </div>
-    </section>
-  </main>
 
-  <footer class="site-footer">
-    <div class="container footer-inner">
-      <div>
-        <a href="index.html" class="brand">🐾 PawPath</a>
-        <p>A Pet Care &amp; Adoption Platform — built as a Cloud Computing project on Firebase.</p>
-      </div>
     </div>
-    <p class="footer-note">© 2026 PawPath. College project — Firebase Firestore, Auth &amp; Storage.</p>
-  </footer>
 
-  <script type="module" src="js/firebase-config.js"></script>
-  <script type="module" src="js/auth.js"></script>
-  <script type="module" src="js/pets.js"></script>
+  </div>
+
+</main>
+
+<footer>
+  <p>&copy; 2026 PawPath. All rights reserved.</p>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/pet-detail.js"></script>
 </body>
 </html>
