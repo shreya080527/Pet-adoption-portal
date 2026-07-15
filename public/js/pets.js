@@ -13,7 +13,6 @@ async function loadPets() {
 
   try {
     const snap = await db.collection('pets')
-      .where('status', '==', 'available')
       .get();
 
     allPets = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));

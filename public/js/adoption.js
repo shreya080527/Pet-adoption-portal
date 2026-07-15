@@ -56,6 +56,19 @@ if (form) {
 
     // Prevent duplicate pending requests
     try {
+      // Check pet status first
+      var petSnap = await db.collection('pets').doc(petId).get();
+      if (!petSnap.exists) {
+        showError('adoptionError', 'Pet not found.');
+        return;
+      }
+
+      var pet = petSnap.data();
+      if (pet.status !== 'available') {
+        showError('adoptionError', 'This pet is not available for adoption. Status: ' + pet.status);
+        return;
+      }
+
       var existing = await db.collection('adoption_requests')
         .where('petId', '==', petId)
         .where('adopterId', '==', user.uid)

@@ -11,9 +11,4 @@ var auth = firebase.auth();
 var db = firebase.firestore();
 var storage = firebase.storage();
 
-// Connect to Firebase Emulators when running locally
-if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-  db.useEmulator('127.0.0.1', 8081);
-  auth.useEmulator('http://127.0.0.1:9099');
-  console.log('Connected to Firebase Emulators');
-}
+

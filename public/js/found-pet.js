@@ -76,6 +76,11 @@ if (form) {
         addedAt: firebase.firestore.FieldValue.serverTimestamp()
       };
 
+      // Track uploader if logged in
+      if (auth.currentUser) {
+        petData.uploadedBy = auth.currentUser.uid;
+      }
+
       await db.collection('pets').add(petData);
 
       showMessage('Thank you! This pet has been registered and is now visible in the gallery.', 'success');

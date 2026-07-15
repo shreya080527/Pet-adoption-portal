@@ -60,9 +60,33 @@ async function loadPets() {
 
 window.updatePetStatus = async function (id, status) {
   if (!status) return;
-  await db.collection('pets').doc(id).update({ status: status, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
-  toast('Status updated to "' + status + '".');
-  loadPets();
+
+  try {
+    // Check if current user is the uploader or an admin
+    var petSnap = await db.collection('pets').doc(id).get();
+    if (!petSnap.exists) {
+      toast('Pet not found.');
+      return;
+    }
+
+    var pet = petSnap.data();
+    var currentUser = auth.currentUser;
+    var userSnap = await db.collection('users').doc(currentUser.uid).get();
+    var userData = userSnap.exists ? userSnap.data() : {};
+
+    // Allow if user is admin or the uploader
+    if (userData.role !== 'admin' && pet.uploadedBy !== currentUser.uid) {
+      toast('Only the uploader or an admin can change pet status.');
+      return;
+    }
+
+    await db.collection('pets').doc(id).update({ status: status, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+    toast('Status updated to "' + status + '".');
+    loadPets();
+  } catch (err) {
+    console.error('Error updating status:', err);
+    toast('Error updating status.');
+  }
 };
 
 window.deletePet = async function (id) {

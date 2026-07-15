@@ -37,6 +37,7 @@ if (form) {
         status: 'pending',
         reasonGivenUp: reason,
         surrenderedBy: user.uid,
+        uploadedBy: user.uid,
         addedAt: firebase.firestore.FieldValue.serverTimestamp(),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       });
